@@ -19,12 +19,20 @@ class User(peewee.Model):
         database = db
 
 
-db.connect()
-User.create_table()
-
 app = Flask(__name__)
 
 pattern = re.compile(r'^20\d{6}$')
+
+
+def init():
+    db.connect()
+    User.create_table()
+
+    user, created = User.get_or_create(username='root', defaults={'username': 'root', 'token': shortuuid.uuid()})
+    app.logger.warning(user.token)
+
+
+init()
 
 
 def login(username: str) -> (str, int):
@@ -77,12 +85,5 @@ def day_off(username: str, date: str) -> (str, int):
     return '1' if is_holiday(date) else '0', 200
 
 
-def main():
-    user, created = User.get_or_create(username='root', defaults={'username': 'root', 'token': shortuuid.uuid()})
-    app.logger.warning(user.token)
-
-    app.run(host='0.0.0.0', port=5000)
-
-
 if __name__ == '__main__':
-    main()
+    app.run(host='0.0.0.0', port=5000)
