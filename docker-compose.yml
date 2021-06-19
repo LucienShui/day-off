@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  day-off:
+    build: .
+    image: day-off:latest
+    container_name: day-off
+    volumes:
+      - ./data:/app/mnt

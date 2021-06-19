@@ -3,12 +3,22 @@ from chinese_calendar import is_holiday
 from datetime import datetime
 import shortuuid
 from peewee import DoesNotExist
+import argparse
 
 import re
 
 import peewee
 
-db = peewee.SqliteDatabase('data.db')
+
+def get_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-db', '--database', type=str, default='data.db')
+
+    args = parser.parse_args()
+    return args
+
+
+db = peewee.SqliteDatabase(get_args().database)
 
 
 class User(peewee.Model):
