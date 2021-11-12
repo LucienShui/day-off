@@ -1,0 +1,14 @@
+GET {{host}}/root/20211111?token={{token}}
+Accept: application/json
+
+###
+GET {{host}}/root/20211113?token={{token}}
+Accept: application/json
+
+###
+GET {{host}}/root/20211113?token={{token}}
+Accept: text/plain
+
+###
+PUT {{host}}/root/20211113/1?token={{token}}
+Accept: application/json
