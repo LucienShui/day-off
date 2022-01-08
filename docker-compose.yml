@@ -5,6 +5,6 @@ services:
     build: .
     image: day-off:latest
     container_name: day-off
-    user: ${USER}
+    user: 1000:1000
     volumes:
       - ./data:/app/mnt
