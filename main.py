@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from functools import wraps
 from typing import Callable, Tuple, Any
+import argparse
 
 import peewee
 import shortuuid
@@ -9,7 +10,7 @@ from chinese_calendar import is_holiday
 from flask import Flask, request, jsonify, Response
 from peewee import DoesNotExist
 
-db = peewee.SqliteDatabase('data.db')
+db = peewee.SqliteDatabase(None)
 
 
 class User(peewee.Model):
@@ -37,7 +38,16 @@ app = Flask(__name__)
 pattern = re.compile(r'^20\d{6}$')
 
 
+def get_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description='Day Off Service')
+    parser.add_argument('--database', help='database path', default='data.db')
+    args = parser.parse_args()
+    return args
+
+
 def init():
+    args = get_args()
+    db.init(args.database)
     db.connect()
     User.create_table()
     Calendar.create_table()
