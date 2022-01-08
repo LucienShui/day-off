@@ -1,4 +1,4 @@
-chinesecalendar~=1.5.0
+chinesecalendar~=1.6.0
 flask~=2.0.1
 peewee~=3.14.4
 shortuuid~=1.0.1

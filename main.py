@@ -56,6 +56,22 @@ def error_response(message: str, code: int) -> (Response, int):
     }), code
 
 
+def login(username: str) -> (str, int):
+    if username != 'root' and (len(username) < 4 or len(username) > 16):
+        return error_response('length of username should greater or equal than 8 and less or equal than 16', 400)
+
+    token = request.args.get('token', None)
+    if token is None:
+        return error_response('token is required', 401)
+
+    try:
+        User.get(User.username == username, User.token == token)
+    except DoesNotExist:
+        return error_response('authorize failed', 401)
+
+    return token, 200
+
+
 def require_login(func: Callable[[str, Any], Tuple[str, int]]):
     @wraps(func)
     def wrapper(*args, **kwargs) -> (str, int):
@@ -79,23 +95,7 @@ def date_validator(func: Callable[[str, Any], Tuple[Response, int]]):
     return wrapper
 
 
-def login(username: str) -> (str, int):
-    if username != 'root' and (len(username) < 4 or len(username) > 16):
-        return error_response('length of username should greater or equal than 8 and less or equal than 16', 400)
-
-    token = request.args.get('token', None)
-    if token is None:
-        return error_response('token is required', 401)
-
-    try:
-        User.get(User.username == username, User.token == token)
-    except DoesNotExist:
-        return error_response('authorize failed', 401)
-
-    return token, 200
-
-
-@app.route('/register/<string:username>')
+@app.route('/api/register/<string:username>')
 def register(username: str):
     message, code = login('root')
     if code != 200:
@@ -107,7 +107,7 @@ def register(username: str):
     return {'code': 201, 'message': 'OK', 'token': user.token}, 201
 
 
-@app.route('/<string:username>/<string:date>', methods=['GET'])
+@app.route('/api/<string:username>/<string:date>', methods=['GET'])
 @require_login
 @date_validator
 def day_off(username: str, date: str) -> (str, int):
@@ -145,7 +145,7 @@ def day_off(username: str, date: str) -> (str, int):
         }), 500
 
 
-@app.route('/<string:username>/<string:date>/<int:status>', methods=['PUT'])
+@app.route('/api/<string:username>/<string:date>/<int:status>', methods=['PUT'])
 @require_login
 @date_validator
 def set_holiday(username: str, date: str, status: int) -> (str, int):
